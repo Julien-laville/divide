@@ -1,0 +1,88 @@
+<!doctype HTML>
+
+<canvas id="automata_screen"></canvas>
+<script type="application/javascript">
+    var SPACE = 32
+    var CELL_SIZE = 5
+    var STEP_TIME = 1000
+    
+    var automata = new Automata()
+    
+    document.onkeypress = function(e) {
+        console.log(e)
+        if(e.charCode == SPACE) {
+            if(automata.isRunning()) {
+                automata.pause()
+            } else {
+                automata.run()
+            }
+        }
+    }
+    
+    automata_screen.onclick = function(e) {
+        automata.add(e.screenX, e.screenY)
+    }
+    
+    var ct = document.getElementById('automata_screen').getContext('2d')
+    
+    function Automata() {
+        var t = 0
+        var state = []
+        var futureState = []
+        
+        var transitions = { 
+            '0s0d' : '0',
+            '0 0d' : '0',
+            
+            '0 1d' : '0',
+            '0s1d' : '0',
+            
+            '1s0d' : '1',
+            '1 0d' : '1',
+            
+            '0d 0' : '0d',
+            '1d 1' : '1d',
+            
+        }
+        
+        var states = {
+            '0s' : '0s', 
+            '1s' : '1s', 
+            '0' : '0', 
+            '1' : '1', 
+            '0d' : '0d', 
+            '1d' : '1d'
+        }
+        
+        var isRunning = false
+        
+        var handler = 0;
+        
+        return {
+            pause : function() {
+                isRunning = false
+                clearInterval(handler);
+            },
+            run : function() {
+                isRunning = true 
+                handler = setInterval(automata.run, STEP_TIME)
+            },
+            add : function(x, y) {
+                ct.fillStyle = "#000000"
+                ct.fillRect(10,10,5,5)
+            },
+            draw : function() {
+                this.state.forEach(function(cell) {
+                    ct.fillStyle = BLOCKS[cell]
+                    ct.fillRect(t * CELL_SIZE, i * CELL_SIZE, CELL_SIZE, CELL_SIZE) 
+                })
+            },
+            isRunning : function() {
+                return isRunning
+            }
+        }
+    }
+    
+
+
+</script>

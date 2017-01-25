@@ -1,0 +1,27 @@
+<meta charset="utf-8">
+<script>
+    function cut(n) {
+        var str = ''
+        var strLength = 0
+        for(var i = 1;;i += 1) {
+            var iPrime = true
+              for(var j = 2; j * j < i + 1; j += 1) {
+                  if(i % j == 0) {
+                      iPrime = false
+                  }
+              }
+            if(iPrime) {
+                strLength += i.toString().length
+                str += i 
+                if(strLength >= n+5) {
+                    return str.slice(n,n+5)
+                }
+            }
+            
+        }   
+    }
+    
+
+
+
+</script>

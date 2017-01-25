@@ -1,0 +1,48 @@
+.b__top-bar {
+    display: flex;
+    background: #454749;
+    color: aliceblue;
+    height: 64px;
+    align-items: center;
+}
+
+.b__logo {
+    margin-right: auto;
+    flex-grow: 0
+}
+
+.b__menu-item {
+    flex-grow: 0;
+    padding: 0 5px;
+    margin: 0 5px;
+}
+
+
+.t__top-bar {
+    align-items: center;
+    display: flex;
+    color : #789;
+    border-bottom: 2px solid #a1a3a5
+}
+
+.t__menu-item {
+    margin-right: 10px;
+    flex-grow: 0;
+}
+
+t__menu-item--active {
+    border-bottom: 3px solid #ffe049;
+}
+
+.t__logo {
+    margin-left: auto;
+    margin-right: auto;
+    
+}
+
+.t__my-face {
+}
+
+.t__button {
+    background:#ffe049;
+}
