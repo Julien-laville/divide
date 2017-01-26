@@ -12,7 +12,11 @@
     a.width = innerWidth;
     a.height = innerHeight;
     c = a.getContext("2d")
-    TIME_MULTIPLIER = 0.1
+    RED_MULTIPLIER = 0.1
+    BULLET_MULTIPLIER = 0.3
+    TIME_STEP = 0.5
+    TIME_LIMIT = 8
+    MIN_SPEED = 1
 
 // c: canvas context2d
     // p: player
@@ -31,25 +35,12 @@
     f = false
     // m: mouse pos
     m = [0,0]
-    var up, left, down, right 
     // CONTROLS
     
     /*
      wasd by xem : u=d=l=r=0;onkeyup=t=(e,v)=>top['lurdl*d*l*ur*u'[(e.which-37)%20]]=v;onkeydown=e=>t(e,1)
     */
-    b.onkeydown = function(e) {
-        up = e.keyCode == 90 || up
-        left = e.keyCode == 81 || left
-        down = e.keyCode == 83 || down
-        right = e.keyCode == 68 || right
-    }
-    
-    b.onkeyup = function(e) {
-        up = !e.keyCode == 90
-        left = !e.keyCode == 81 
-        down = !e.keyCode == 83 
-        right = !e.keyCode == 68 
-    }
+    U=D=L=R=0;onkeyup=T=(e,v)=>top['LURDL*D*L*UR*U'[(e.which-37)%20]]=v;onkeydown=e=>T(e,1)
     
     b.onmousedown = function(e) {
         f = true
@@ -67,11 +58,11 @@
         a.width += 0
         /* move player */
         
-        p[1] = down ? p[1] + t : p[1]
-        p[1] = up ? p[1] - t : p[1]
+        p[1] = D ? p[1] + t : p[1]
+        p[1] = U ? p[1] - t : p[1]
         
-        p[0] = right ? p[0] + t : p[0]
-        p[0] = left ? p[0] - t : p[0]
+        p[0] = R ? p[0] + t : p[0]
+        p[0] = L ? p[0] - t : p[0]
         /* draw player */
         c.fillStyle = "#FFFFFF"
         c.fillRect(p[0] - 5,p[1] - 5, 10, 10)
@@ -82,10 +73,10 @@
             c.fillRect(g[0]-5,g[1]-5,10,10)
             /* red guys live */
             var aimPlayerVectorStance = stance(p,g)
-            g[0] += (p[0] - g[0]) / aimPlayerVectorStance * t * TIME_MULTIPLIER
-            g[1] += (p[1] - g[1]) / aimPlayerVectorStance * t * TIME_MULTIPLIER
+            g[0] += (p[0] - g[0]) / aimPlayerVectorStance * t * RED_MULTIPLIER
+            g[1] += (p[1] - g[1]) / aimPlayerVectorStance * t * RED_MULTIPLIER
             
-            if(e % 30 == 0) {
+            if(e % 30 < 1) {
                 g[3] = 1
             }
             
@@ -93,20 +84,20 @@
                 g[3] = 0
                 /* fire x current, y current, x init, y init, x at, y at */
                 var bulletStance = stance([g[0],g[1]], [p[0], g[1]])
-                u.push([g[0], g[1], g[0], g[1], (g[0] - p[0]) / bulletStance, (g[1] - p[1]) / bulletStance])
+                u.push([g[0], g[1], g[0], g[1], (g[0] - p[0]) / bulletStance, (g[1] - p[1]) / bulletStance, Math.random()])
             }
         })
         
         u.forEach(function(bullet) {
-            bullet[0] = bullet[0] - bullet[4] * t * TIME_MULTIPLIER * 2
-            bullet[1] = bullet[1] - bullet[5] * t * TIME_MULTIPLIER * 2
+            bullet[0] = bullet[0] - bullet[4] * t * BULLET_MULTIPLIER 
+            bullet[1] = bullet[1] - bullet[5] * t * BULLET_MULTIPLIER
             
             if(stance(bullet, p) < 5) {
                 //b.innerHTML = 'Game over'
             }
             
             c.fillRect(bullet[0]-2,bullet[1]-2, 4,4)
-            c.strokeStyle = "#313335"
+            c.strokeStyle = "hsl("+bullet[6]*360+",100%,15%)"
             c.beginPath()       
             
             c.moveTo(bullet[0],bullet[1]);
@@ -117,14 +108,14 @@
         
         
 
-        if(e % 30 == 0 && r.length < 20) {
-            r.push([Math.random()*150,Math.random()*100,1,0])
+        if(e % 100 < 1 && r.length < 20) {
+            r.push([Math.random()*innerWidth,Math.random()*innerHeight,1,0])
         }
         
         
         /* recalc time dilatation */
-        t = (up || left || right || down) ? (t += 1) : 1
-        t = t > 20 ? 20 : t
+        t = (U || L || R || D) ? (t += TIME_STEP) : MIN_SPEED
+        t = t > TIME_LIMIT ? TIME_LIMIT : t
         /* add elapsed time */
         e+=t
         /* show some data */
