@@ -67,6 +67,7 @@
     // 1 : cac | 2 : pistol | 3 : shotgun | 4 : auto
     r = []
     // u: bullets
+    bullets = new Pool(100, Bullet)
     u = []
     bi = 0// last bullet index
     // f: is fireing
@@ -252,6 +253,12 @@
         }
        
     }
+    
+    function Bullet() {
+        
+    }
+    
+    //Bullet.prototype.
     
    
     
