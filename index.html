@@ -5,6 +5,8 @@
 </style>
 <div id="i"></div>
 <canvas id="a" style="background:#111517"></canvas>
+<script src="v2d.js"></script>
+<script src="pool.js"></script>
 <script src="levelOne.js"></script>
 <script>
     tiles = {
@@ -18,10 +20,12 @@
         - map
         - //player fire
         - //bullet disapears
+        - bullet class
+        - real pool with pivot
             - //on collision
                 - with map
-                - //player
-                - //red guys
+                - player
+                - red guys
         - red guys have wearpons
         - collision
         - player action update time dilatation for a moment
@@ -36,6 +40,7 @@
     a.width = innerWidth;
     a.height = innerHeight;
     c = a.getContext("2d")
+    
     RED_MULTIPLIER = 0.1
     BULLET_MULTIPLIER = 0.8
     TIME_STEP = 1
@@ -71,9 +76,7 @@
     // CONTROLS
     
     
-    /*
-     wasd by xem : u=d=l=r=0;onkeyup=t=(e,v)=>top['lurdl*d*l*ur*u'[(e.which-37)%20]]=v;onkeydown=e=>t(e,1)
-    */
+    /* wasd by xem */
     U=D=L=R=0;onkeyup=T=(e,v)=>top['LURDL*D*L*UR*U'[(e.which-37)%20]]=v;onkeydown=e=>T(e,1)
     
     b.onmousedown = function(e) {
@@ -109,9 +112,7 @@
         /* player fire */
         if(p[2]<0 && f) {
             p[2] = PLAYER_PISTOL_CD
-            
             addBullet(p,m,0)
-            
         } else {
             p[2]--
         }
@@ -121,8 +122,6 @@
         r.forEach(function(g) {
             g.draw()
             g.tick()
-        
-           
         })
         
         for(var i = 0; i < BULLET_POOL_SIZE; i++) {
@@ -136,8 +135,8 @@
 
                 }
                 u.forEach(function(red, redPos) {
-                    if(stance(red, bullet) < 5) {
-                        //u[redPos] = false
+                    if(stance([red.x, red.y], bullet) < 5) {
+                        red.alive = false
                     }
                 })
 
@@ -199,7 +198,7 @@
     function loadEntities() {
         map.layers[1].objects.forEach(function(entity) {
             if(entity.name === 'start') {
-                p = [entity.x, entity.y]
+                p = [entity.x, entity.y, 0]
             } else if(entity.name === 'red') {
                 r.push(new Red(entity.x, entity.y, entity.properties.spawnTime))
             }
@@ -241,7 +240,7 @@
             
             /* fire */
             
-            if(e < 1) {
+            if(this.cd < 1) {
                 this.cd = PLAYER_PISTOL_CD
                 addBullet([this.x,this.y],p,0)
             } else {
@@ -253,6 +252,7 @@
         }
        
     }
-
+    
+   
     
 </script>
