@@ -17,6 +17,7 @@ function Pool(size, constructor) {
 }
 
 Pool.prototype.kill = function(item) {
+    this.tmpPos = item.position
     this.tmp = this.pool[this.pivot]
     this.pool[this.pivot] = item
     this.pool[item.position] = this.tmp
