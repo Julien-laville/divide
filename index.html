@@ -54,6 +54,9 @@
     RED_GUYS_CD = 1500
     RED_GUYS_SPAWN_CD = 1000
     
+    CELL_SIZE = 10
+    CELL_TIME = 300
+    
 
     // c: canvas context2d
     // p: player x | y | pistol cd | current w cd
@@ -74,6 +77,8 @@
     f = false
     // m: mouse pos
     m = [0,0]
+    /* cells for bullets marks */
+    cells = Object.create(null)
     // CONTROLS
     
     
@@ -143,19 +148,24 @@
 
 
 
-                /* border */
+                /* border 
                 c.lineWidth = 9
                 c.strokeStyle = "hsl("+bullet[6]*360+",100%,7%)"
                 c.beginPath()       
                 c.moveTo(bullet[0],bullet[1]);
                 c.lineTo(bullet[2],bullet[3]);
                 c.stroke(); 
-                /* center */
+                center 
                 c.lineWidth = 2
                 c.strokeStyle = "hsl("+bullet[6]*360+",100%,85%)"
                 c.moveTo(bullet[0],bullet[1]);
                 c.stroke(); 
-                /* bullet */
+                bullet */
+                cells[Math.floor((bullet[0]-BULLET_SIZE/2) / CELL_SIZE),Math.floor((bullet[1]-BULLET_SIZE/2) / CELL_SIZE), CELL_TIME] = {
+                    x : bullet[0]-BULLET_SIZE/2,
+                    y : bullet[1]-BULLET_SIZE/2
+                }
+                
                 c.fillRect(bullet[0]-BULLET_SIZE/2,bullet[1]-BULLET_SIZE/2, BULLET_SIZE,BULLET_SIZE)
             }
             
@@ -257,6 +267,14 @@
     function Bullet() {
         
     }
+    var cell = null;
+    function drawCells() {
+        for(var cellKey in cells) {
+            cell = cells[cellKey]
+            c.fillRect(cell.x, cell.y, CELL_SIZE, CELL_SIZE)
+        } 
+    }
+    
     
     //Bullet.prototype.
     
