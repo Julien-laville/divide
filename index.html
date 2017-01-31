@@ -5,8 +5,8 @@
 </style>
 <div id="i"></div>
 <canvas id="a" style="background:#111517"></canvas>
-<script src="v2d.js"></script>
-<script src="pool.js"></script>
+<script src="jsToolBox/v2d.js"></script>
+<script src="jsToolBox/pool.js"></script>
 <script src="levelOne.js"></script>
 <script>
     tiles = {
@@ -55,7 +55,7 @@
     RED_GUYS_SPAWN_CD = 1000
     
     CELL_SIZE = 10
-    CELL_TIME = 300
+    CELL_TIME = 50
     
 
     // c: canvas context2d
@@ -79,6 +79,7 @@
     m = [0,0]
     /* cells for bullets marks */
     cells = Object.create(null)
+    
     // CONTROLS
     
     
@@ -161,14 +162,20 @@
                 c.moveTo(bullet[0],bullet[1]);
                 c.stroke(); 
                 bullet */
-                cells[Math.floor((bullet[0]-BULLET_SIZE/2) / CELL_SIZE),Math.floor((bullet[1]-BULLET_SIZE/2) / CELL_SIZE), CELL_TIME] = {
-                    x : bullet[0]-BULLET_SIZE/2,
-                    y : bullet[1]-BULLET_SIZE/2
-                }
-                
+                Cell(bullet[0], bullet[1])
                 c.fillRect(bullet[0]-BULLET_SIZE/2,bullet[1]-BULLET_SIZE/2, BULLET_SIZE,BULLET_SIZE)
             }
             
+        }
+        
+        for(var cellKey in cells) {
+            var cell = cells[cellKey];
+            if(cell.t < 0) {
+                delete cells[cellKey]
+            } else {
+                cell.t--
+            }
+            drawCell(cell)
         }
         
     
@@ -267,15 +274,25 @@
     function Bullet() {
         
     }
-    var cell = null;
-    function Cell() {
-        
+
+    var tmpCellX = 0
+    var tmpCellY = 0
+    
+    function Cell(x,y) {
+        tmpCellX = Math.floor((x-BULLET_SIZE/2) / CELL_SIZE)
+        tmpCellY = Math.floor((y-BULLET_SIZE/2) / CELL_SIZE)
+        cells[tmpCellX + '_' + tmpCellY] = {
+            x : tmpCellX,
+            y : tmpCellY,
+            t : CELL_TIME
+        }
     }
-    /*
-    Cell.prototype.draw = function() 
-        c.fillRect(this.x, this.y, CELL_SIZE, CELL_SIZE)
+    
+    function drawCell(cell) {
+        c.fillStyle = "hsl(0, 100%, "+cell.t+"%)" 
+        c.fillRect(cell.x*CELL_SIZE, cell.y*CELL_SIZE, CELL_SIZE, CELL_SIZE)
     }
-    */
+    
     
     //Bullet.prototype.
     
