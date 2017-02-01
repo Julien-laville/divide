@@ -5,12 +5,14 @@
 </style>
 <div id="i"></div>
 <canvas id="a" style="background:#111517"></canvas>
-<script src="v2d.js"></script>
-<script src="pool.js"></script>
+<script src="jsToolBox/v2d.js"></script>
+<script src="jsToolBox/pool.js"></script>
 <script src="levelOne.js"></script>
 <script>
     tiles = {
-        1 : "#FFFFFF"
+        0 : "#000000",
+        1 : "#FFFFFF",
+        2 : "#c3f245",
     }
 </script>
 <script>
@@ -19,9 +21,9 @@
     
         - map
         - //player fire
+        - //bullet class
+        - //real pool with pivot
         - //bullet disapears
-        - bullet class
-        - real pool with pivot
             - //on collision
                 - with map
                 - player
@@ -56,7 +58,7 @@
     RED_GUYS_SPAWN_CD = 1000
     
     CELL_SIZE = 10
-    CELL_TIME = 300
+    CELL_TIME = 50
     
 
     // c: canvas context2d
@@ -80,6 +82,9 @@
     m = [0,0]
     /* cells for bullets marks */
     cells = Object.create(null)
+    
+    collidables = []
+    
     // CONTROLS
     
     
@@ -162,14 +167,21 @@
                 c.moveTo(bullet[0],bullet[1]);
                 c.stroke(); 
                 bullet */
-                cells[Math.floor((bullet[0]-BULLET_SIZE/2) / CELL_SIZE),Math.floor((bullet[1]-BULLET_SIZE/2) / CELL_SIZE), CELL_TIME] = {
-                    x : bullet[0]-BULLET_SIZE/2,
-                    y : bullet[1]-BULLET_SIZE/2
-                }
-                
-                c.fillRect(bullet[0]-BULLET_SIZE/2,bullet[1]-BULLET_SIZE/2, BULLET_SIZE,BULLET_SIZE)
+                Cell(bullet[0], bullet[1])
+                //c.fillRect(bullet[0]-BULLET_SIZE/2,bullet[1]-BULLET_SIZE/2, //BULLET_SIZE,BULLET_SIZE)
             }
             
+        }
+        
+        /* draw cells */
+        for(var cellKey in cells) {
+            var cell = cells[cellKey];
+            if(cell.t < 0) {
+                delete cells[cellKey]
+            } else {
+                cell.t--
+            }
+            drawCell(cell)
         }
         
     
@@ -207,6 +219,7 @@
         }
     }
     
+    
     function loadEntities() {
         map.layers[1].objects.forEach(function(entity) {
             if(entity.name === 'start') {
@@ -215,6 +228,15 @@
                 r.push(new Red(entity.x, entity.y, entity.properties.spawnTime))
             }
         })
+        
+       for(var i = 0; i < map.width; i ++) {
+            for(var j = 0; j < map.height; j ++) {
+                tile = map.layers[0].data[i+j*100]
+                if(tile === tiles[1]) {
+                   collidables.push({x : i, y : j})
+                }
+            }
+        }
     }
     
     function drawMap() {
@@ -251,7 +273,6 @@
             this.y += (p[1] - this.y) / aimPlayerVectorStance * t * RED_MULTIPLIER
             
             /* fire */
-            
             if(this.cd < 1) {
                 this.cd = PLAYER_PISTOL_CD
                 addBullet([this.x,this.y],p,0)
@@ -268,15 +289,25 @@
     function Bullet() {
         
     }
-    var cell = null;
-    function Cell() {
-        
+
+    var tmpCellX = 0
+    var tmpCellY = 0
+    
+    function Cell(x,y) {
+        tmpCellX = Math.floor((x-CELL_SIZE) / CELL_SIZE)
+        tmpCellY = Math.floor((y-CELL_SIZE) / CELL_SIZE)
+        cells[tmpCellX + '_' + tmpCellY] = {
+            x : tmpCellX,
+            y : tmpCellY,
+            t : CELL_TIME
+        }
     }
-    /*
-    Cell.prototype.draw = function() 
-        c.fillRect(this.x, this.y, CELL_SIZE, CELL_SIZE)
+    
+    function drawCell(cell) {
+        c.fillStyle = "hsl(0, 100%, "+cell.t+"%)" 
+        c.fillRect(cell.x*CELL_SIZE, cell.y*CELL_SIZE, CELL_SIZE, CELL_SIZE)
     }
-    */
+    
     
     //Bullet.prototype.
     
