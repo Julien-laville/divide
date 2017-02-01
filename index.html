@@ -32,17 +32,21 @@
         - collision
         - player action update time dilatation for a moment
         - red ia & roles
+            - a star
         - mission editor
     
     */
 // a: canvas
 // b: body
     var map = TileMaps.levelOne
+    
     b = document.body
     a.width = innerWidth;
     a.height = innerHeight;
     c = a.getContext("2d")
     
+    
+    TILE_SIZE = map.tilewidth
     RED_MULTIPLIER = 0.1
     BULLET_MULTIPLIER = 0.8
     TIME_STEP = 1
@@ -72,7 +76,7 @@
     // 1 : cac | 2 : pistol | 3 : shotgun | 4 : auto
     r = []
     // u: bullets
-    bullets = new Pool(100, Bullet)
+   // bullets = new Pool(100, Bullet)
     u = []
     bi = 0// last bullet index
     // f: is fireing
@@ -93,15 +97,16 @@
     b.onmousedown = function(e) {
         f = true
     }
+    
     b.onmouseup = function(e) {
         f = false
     }
-    
     
     b.onmousemove = function(e) {
         m[0] = e.x
         m[1] = e.y - e.target.offsetTop
     }
+    
     loadEntities()
     var t0 = 0;
     var t1 = 0;
@@ -118,6 +123,18 @@
         
         p[0] = R ? p[0] + t : p[0]
         p[0] = L ? p[0] - t : p[0]
+        
+        for(var i = 0; i < collidables.length; i++) {
+            var collidable = collidables[i]
+            if(p[0] > collidable.x && p[0] < collidable.x+TILE_SIZE
+              &&
+               p[1] > collidable.y && p[1] < collidable.y+TILE_SIZE) {
+                p[0] = collidable.x + TILE_SIZE
+               // p[1] = collidable.y + TILE_SIZE
+            }
+            //collidable.y 
+        }
+        
         /* draw player */
         c.fillStyle = "#FFFFFF"
         c.fillRect(p[0]-ENTITY_SIZE/2,p[1]-ENTITY_SIZE/2, ENTITY_SIZE, ENTITY_SIZE)
@@ -236,8 +253,8 @@
        for(var i = 0; i < map.width; i ++) {
             for(var j = 0; j < map.height; j ++) {
                 tile = map.layers[0].data[i+j*100]
-                if(tile === tiles[1]) {
-                   collidables.push({x : i, y : j})
+                if(tile === 1) {
+                   collidables.push({x : i*TILE_SIZE, y : j*TILE_SIZE})
                 }
             }
         }
@@ -249,7 +266,7 @@
                 tile = map.layers[0].data[i+j*100]
                 if(tile) {
                     c.fillStyle = tiles[tile]
-                    c.fillRect(i*map.tilewidth, j*map.tilewidth, map.tilewidth, map.tilewidth)
+                    c.fillRect(i*TILE_SIZE, j*TILE_SIZE, TILE_SIZE, TILE_SIZE)
                 }
             }
         }
@@ -308,7 +325,7 @@
     }
     
     function drawCell(cell) {
-        c.fillStyle = "hsl(0, 100%, "+cell.t+"%)" 
+        c.fillStyle = "hsla(0, 100%, 25%, "+(cell.t/100)+")" 
         c.fillRect(cell.x*CELL_SIZE, cell.y*CELL_SIZE, CELL_SIZE, CELL_SIZE)
     }
     
