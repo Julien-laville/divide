@@ -3,7 +3,7 @@
         margin: 0;padding: 0;font-family: sans-serif;
     }
 </style>
-<div id="i"></div>
+<div id="info"></div>
 <canvas id="a" style="background:#111517"></canvas>
 <script src="jsToolBox/v2d.js"></script>
 <script src="jsToolBox/pool.js"></script>
@@ -103,8 +103,10 @@
         m[1] = e.y - e.target.offsetTop
     }
     loadEntities()
-    
+    var t0 = 0;
+    var t1 = 0;
     function l() {
+        var t0 = performance.now();
         /* draw map */
         
         a.width += 0
@@ -192,7 +194,10 @@
         e+=t
         cleanBullets()
         /* show some data */
-        i.innerHTML = "speed : " + t + "<br>time : " + e + "<br>"
+        t1 = performance.now();
+        console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.");
+        info.innerHTML = "speed : " + t + "<br>time : " + e + "<br>take :" + (t1 - t0) 
+        
     }
     setInterval(l,16)
     
