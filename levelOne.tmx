@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="left-up" width="100" height="100" tilewidth="32" tileheight="32" nextobjectid="11">
- <tileset firstgid="1" name="base" tilewidth="32" tileheight="32" tilecount="1024" columns="32">
+<map version="1.0" orientation="orthogonal" renderorder="left-up" width="100" height="100" tilewidth="32" tileheight="32" nextobjectid="12">
+ <tileset firstgid="1" name="base" tilewidth="32" tileheight="32" tilecount="6" columns="32">
   <image source="../../Téléchargements/leia.png" width="1024" height="1024"/>
  </tileset>
  <layer name="map" width="100" height="100">
@@ -122,5 +122,8 @@
    </properties>
   </object>
   <object id="9" x="22" y="10"/>
+  <object id="11" x="240" y="200">
+   <polyline points="-10,405 177,160 337,259 600,83 458,-63 -24,-136 7,-47 -150,222"/>
+  </object>
  </objectgroup>
 </map>
