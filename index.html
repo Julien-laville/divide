@@ -62,6 +62,7 @@
     
     CELL_SIZE = 10
     CELL_TIME = 50
+    SOUND_CD = 300
     
 
     // c: canvas context2d
@@ -88,11 +89,25 @@
     
     collidables = []
     
+    foyers = Object.create(null)
+    soundCells = Object.create(null)
     // CONTROLS
     
     
     /* wasd by xem */
     U=D=L=R=0;onkeyup=T=(e,v)=>top['LURDL*D*L*UR*U'[(e.which-37)%20]]=v;onkeydown=e=>T(e,1)
+    /* pause */
+    window.onkeypress = function(e) {
+        if(e.which === 32 && loopHandler) {// space pause 
+            clearInterval(loopHandler)
+            loopHandler = 0
+            c.font = '48px sans-serif'
+            c.fillStyle = 'black'
+            c.fillText('PAUSE', a.width / 2 -  60, a.height / 2, a.width)
+        } else if(e.which === 32 && !loopHandler) {
+            loopHandler = setInterval(l,16)
+        }
+    }
     
     b.onmousedown = function(e) {
         f = true
@@ -202,6 +217,16 @@
             drawCell(cell)
         }
         
+        for(var soundCellKey in soundCells) {
+            var soundCell = soundCells[soundCellKey]
+            if(soundCell.t < 0) {
+                soundCell --
+                startWave(soundCell)
+            } else {
+                soundCell ++
+            }
+        }
+        
     
         
         /* recalc time dilatation */
@@ -216,7 +241,8 @@
         info.innerHTML = "speed : " + t + "<br>time : " + e + "<br>take :" + (t1 - t0) 
         
     }
-    setInterval(l,16)
+    var loopHandler = setInterval(l,16)
+    
     
     function stance(a, b) {
         return Math.sqrt((a[0] - b[0]) * (a[0] - b[0]) + (a[1] - b[1]) * (a[1] - b[1])) 
@@ -274,10 +300,17 @@
     
     function Red(x,y, spawnTime) {
         this.alive = false; 
+        this.isFoyer = true  
         this.spawnTime = spawnTime
         this.x = x
         this.y = y
         this.cd = 0
+        
+        foyers[x + '_' + y] = {
+            x : this.x,
+            y : this.y,
+            t : SOUND_CD
+        }
     }
     
     Red.prototype.draw = function() {
@@ -285,6 +318,7 @@
             c.fillRect(this.x-ENTITY_SIZE/2,this.y-ENTITY_SIZE/2,ENTITY_SIZE,ENTITY_SIZE)
         }
     }
+    
     
     Red.prototype.tick = function() {
         if(this.alive) {
@@ -328,10 +362,5 @@
         c.fillStyle = "hsla(0, 100%, 25%, "+(cell.t/100)+")" 
         c.fillRect(cell.x*CELL_SIZE, cell.y*CELL_SIZE, CELL_SIZE, CELL_SIZE)
     }
-    
-    
-    //Bullet.prototype.
-    
-   
     
 </script>
