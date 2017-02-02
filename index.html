@@ -59,7 +59,7 @@
     MAX_RED_GUYS = 20
     RED_GUYS_CD = 1500
     RED_GUYS_SPAWN_CD = 1000
-    
+    SOUND_WAVE_TIME = 300
     CELL_SIZE = 10
     CELL_TIME = 50
     
@@ -85,7 +85,7 @@
     m = [0,0]
     /* cells for bullets marks */
     cells = Object.create(null)
-    
+    soundCells = Object.create(null)
     collidables = []
     
     // CONTROLS
@@ -124,14 +124,35 @@
         p[0] = R ? p[0] + t : p[0]
         p[0] = L ? p[0] - t : p[0]
         
+        
         for(var i = 0; i < collidables.length; i++) {
             var collidable = collidables[i]
-            if(p[0] > collidable.x && p[0] < collidable.x+TILE_SIZE
-              &&
-               p[1] > collidable.y && p[1] < collidable.y+TILE_SIZE) {
-                p[0] = collidable.x + TILE_SIZE
-               // p[1] = collidable.y + TILE_SIZE
-            }
+            
+            
+            
+                
+            
+            if(R) { // ->
+                if(p[0] > collidable.x && p[0] < collidable.x+TILE_SIZE
+                &&
+                p[1] > collidable.y && p[1] < collidable.y+TILE_SIZE) {
+                    p[0] = collidable.x
+                } 
+            } else if(L) { // <-
+                if(p[0] > collidable.x && p[0] < collidable.x+TILE_SIZE
+                &&
+                p[1] > collidable.y && p[1] < collidable.y+TILE_SIZE) {
+                    p[0] = collidable.x + TILE_SIZE
+                } 
+            } 
+           /* if(U) {
+                 if(p[1] > collidable.x && p[0] < collidable.x+TILE_SIZE
+                &&
+                p[1] > collidable.y && p[1] < collidable.y+TILE_SIZE) {
+                    p[0] = collidable.x + TILE_SIZE
+                } 
+            }*/
+            
             //collidable.y 
         }
         
@@ -170,23 +191,7 @@
                     }
                 })
 
-
-
-                /* border 
-                c.lineWidth = 9
-                c.strokeStyle = "hsl("+bullet[6]*360+",100%,7%)"
-                c.beginPath()       
-                c.moveTo(bullet[0],bullet[1]);
-                c.lineTo(bullet[2],bullet[3]);
-                c.stroke(); 
-                center 
-                c.lineWidth = 2
-                c.strokeStyle = "hsl("+bullet[6]*360+",100%,85%)"
-                c.moveTo(bullet[0],bullet[1]);
-                c.stroke(); 
-                bullet */
                 Cell(bullet[0], bullet[1])
-                //c.fillRect(bullet[0]-BULLET_SIZE/2,bullet[1]-BULLET_SIZE/2, //BULLET_SIZE,BULLET_SIZE)
             }
             
         }
@@ -200,6 +205,15 @@
                 cell.t--
             }
             drawCell(cell)
+        }
+        /* draw sound wave */
+        for(var cellKey in soundCells) {
+            var cell = soundCells[cellKey];
+            if(cell.t < 0) {
+                delete cells[cellKey]
+            } else {
+                cell.t--
+            }
         }
         
     
@@ -288,10 +302,26 @@
     
     Red.prototype.tick = function() {
         if(this.alive) {
+            
+            this.tileX = Math(this.x / TILE_SIZE)
+            this.tileY = Math(this.y / TILE_SIZE)
+            
             /* move */
             var aimPlayerVectorStance = stance(p,[this.x, this.y])
             this.x += (p[0] - this.x) / aimPlayerVectorStance * t * RED_MULTIPLIER
             this.y += (p[1] - this.y) / aimPlayerVectorStance * t * RED_MULTIPLIER
+            
+            this.newTileX = Math(this.x / TILE_SIZE)
+            this.newTileY = Math(this.y / TILE_SIZE)
+            if(this.tileX != this.newTileX || this.tileY != this.newTileY) {
+                // tile changed
+                soundCells[this.newTileX + '_' + this.newTileY] = {
+                    x : this.newTileX,
+                    y : this.newTileY,
+                    t : SOUND_WAVE_TIME
+                }
+                
+            }
             
             /* fire */
             if(this.cd < 1) {
