@@ -9,7 +9,7 @@ class Map {
     load(rawMap, player, reds) {
          rawMap.layers[1].objects.forEach(function(entity) {
             if(entity.name === 'start') {
-                player.pos.setVector(entity.x, entity.y)
+                player.pos.setVector(entity)
             } else if(entity.name === 'red') {
                 let red = reds.revive()
                 red.pos.setPoint(entity.x, entity.y)

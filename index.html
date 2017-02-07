@@ -70,6 +70,9 @@
     CELL_SIZE = 10
     CELL_TIME = 50
     SOUND_CD = 300
+    SOUND_PROPAGATIONS_SPEED = 0.1
+    
+    PII = 2 * Math.PI
     
 
     // c: canvas context2d
@@ -94,11 +97,10 @@
     m = [0,0]
     /* cells for bullets marks */
     cells = Object.create(null)
-    soundCells = Object.create(null)
     collidables = []
     
     foyers = Object.create(null)
-    soundCells = Object.create(null)
+    //soundWaves = Object.create(null)
     // CONTROLS
     
     
@@ -218,7 +220,7 @@
             drawCell(cell)
         }
         /* draw sound wave */
-        for(var cellKey in soundCells) {
+        /*for(var cellKey in soundCells) {
             var cell = soundCells[cellKey];
             if(cell.t < 0) {
                 delete cells[cellKey]
@@ -237,16 +239,18 @@
             }
         }
         
-    
+        */
         
         /* recalc time dilatation */
         t = (U || L || R || D) ? (t += TIME_STEP) : MIN_SPEED
         t = t > TIME_LIMIT ? TIME_LIMIT : t
         /* add elapsed time */
         e+=t
-        cleanBullets()
+        //cleanBullets()
         /* show some data */
         t1 = performance.now();
+        /* draw sound wave */
+        SoundWave.drawAll()
         console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.");
         info.innerHTML = "speed : " + t + "<br>time : " + e + "<br>take :" + (t1 - t0) 
         
@@ -278,7 +282,6 @@
     
 
 
-
     var tmpCellX = 0
     var tmpCellY = 0
     
@@ -296,5 +299,41 @@
         c.fillStyle = "hsla(0, 100%, 25%, "+(cell.t/100)+")" 
         c.fillRect(cell.x*CELL_SIZE, cell.y*CELL_SIZE, CELL_SIZE, CELL_SIZE)
     }
+    
+    
+    function SoundWave(x, y) {
+        this.x = x;
+        this.y = y;
+        this.radius = 0;
+    }
+    
+    SoundWave.prototype.tick = function() {
+        this.radius += SOUND_PROPAGATIONS_SPEED * t
+        this.draw()
+        
+        
+        //cells[tmpCellX]
+    }
+    
+    SoundWave.prototype.draw = function() {
+        c.beginPath()
+        c.arc(this.x, this.y, this.radius, 0, PII)
+        c.strokeStyle = "red";
+        c.lineWidth = 2;
+        c.stroke()
+    }
+    
+    SoundWave.drawAll = function() {
+        for(var foyerKey in foyers) {
+            var foyer = foyers[foyerKey]
+            foyer.tick()
+            if(foyer.radius > 100) {
+                delete foyers[foyerKey]
+            } else {
+                foyer.draw()
+            }
+        }
+    }
+    
     
 </script>

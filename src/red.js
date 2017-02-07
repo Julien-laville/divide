@@ -12,32 +12,24 @@ class RedGuy {
         }
     }
     
-    tick () {
-        
-        this.tileX = Math(this.x / TILE_SIZE)
-        this.tileY = Math(this.y / TILE_SIZE)
+    tick (player) {
+
 
         /* move */
-        var aimPlayerVectorStance = stance(p,[this.x, this.y])
-        this.x += (p[0] - this.x) / aimPlayerVectorStance * t * RED_MULTIPLIER
-        this.y += (p[1] - this.y) / aimPlayerVectorStance * t * RED_MULTIPLIER
+        //var aimPlayerVectorStance = stance(player,[this.x, this.y])
+       // this.x += (player.pos.x - this.x) / aimPlayerVectorStance * t * RED_MULTIPLIER
+        //this.y += (player.pos.y - this.y) / aimPlayerVectorStance * t * RED_MULTIPLIER
 
-        this.newTileX = Math(this.x / TILE_SIZE)
-        this.newTileY = Math(this.y / TILE_SIZE)
-        if(this.tileX != this.newTileX || this.tileY != this.newTileY) {
-            // tile changed
-            soundCells[this.newTileX + '_' + this.newTileY] = {
-                x : this.newTileX,
-                y : this.newTileY,
-                t : SOUND_WAVE_TIME
-            }
+        //this.newTileX = Math(this.x / TILE_SIZE)
+        //this.newTileY = Math(this.y / TILE_SIZE)
+        
 
-        }
+        
 
         /* fire */
         if(this.weaponCD < 1) {
             this.weaponCD = PLAYER_PISTOL_CD
-            addBullet([this.x,this.y],p,0)
+            //addBullet([this.x,this.y],player.pos,0)
         } else {
             this.weaponCD --
         }
