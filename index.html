@@ -7,6 +7,13 @@
 <canvas id="a" style="background:#111517"></canvas>
 <script src="jsToolBox/v2d.js"></script>
 <script src="jsToolBox/pool.js"></script>
+
+
+<script src="src/player.js"></script>
+<script src="src/red.js"></script>
+<script src="src/bullet.js"></script>
+<script src="src/map.js"></script>
+
 <script src="levelOne.js"></script>
 <script>
     tiles = {
@@ -28,6 +35,7 @@
                 - with map
                 - player
                 - red guys
+        - split & es6
         - red guys have wearpons
         - collision
         - player action update time dilatation for a moment
@@ -38,7 +46,6 @@
     */
 // a: canvas
 // b: body
-    var map = TileMaps.levelOne
     
     b = document.body
     a.width = innerWidth;
@@ -46,7 +53,7 @@
     c = a.getContext("2d")
     
     
-    TILE_SIZE = map.tilewidth
+    TILE_SIZE = TileMaps.levelOne.tilewidth
     RED_MULTIPLIER = 0.1
     BULLET_MULTIPLIER = 0.8
     TIME_STEP = 1
@@ -67,18 +74,19 @@
 
     // c: canvas context2d
     // p: player x | y | pistol cd | current w cd
-    p = [0,0, -1]
-    pv = [0,0]
+    const player = new Player(0,0)
     // t: time dilatation
     t = 1
     // e: elapsed time
     e = 0
     // r: red guys
     // 1 : cac | 2 : pistol | 3 : shotgun | 4 : auto
-    r = []
+    const reds = new Pool(10,RedGuy)
     // u: bullets
    // bullets = new Pool(100, Bullet)
-    u = []
+    const bullets = new Pool(Bullet)
+    
+    const map = new Map()
     bi = 0// last bullet index
     // f: is fireing
     f = false
@@ -122,7 +130,7 @@
         m[1] = e.y - e.target.offsetTop
     }
     
-    loadEntities()
+    map.load(TileMaps.levelOne, player, reds)
     var t0 = 0;
     var t1 = 0;
     function l() {
@@ -130,16 +138,11 @@
         /* draw map */
         
         a.width += 0
-        drawMap()
+        map.draw()
         /* move player */
         
-        p[1] = D ? p[1] + t : p[1]
-        p[1] = U ? p[1] - t : p[1]
-        
-        p[0] = R ? p[0] + t : p[0]
-        p[0] = L ? p[0] - t : p[0]
-        
-        
+       player.move()
+        /*
         for(var i = 0; i < collidables.length; i++) {
             var collidable = collidables[i]
             
@@ -160,36 +163,29 @@
                     p[0] = collidable.x + TILE_SIZE
                 } 
             } 
-           /* if(U) {
+            if(U) {
                  if(p[1] > collidable.x && p[0] < collidable.x+TILE_SIZE
                 &&
                 p[1] > collidable.y && p[1] < collidable.y+TILE_SIZE) {
                     p[0] = collidable.x + TILE_SIZE
                 } 
-            }*/
+            }
             
             //collidable.y 
-        }
+        }*/
         
-        /* draw player */
-        c.fillStyle = "#FFFFFF"
-        c.fillRect(p[0]-ENTITY_SIZE/2,p[1]-ENTITY_SIZE/2, ENTITY_SIZE, ENTITY_SIZE)
+        player.draw()
+        player.fire()
         
-        /* player fire */
-        if(p[2]<0 && f) {
-            p[2] = PLAYER_PISTOL_CD
-            addBullet(p,m,0)
-        } else {
-            p[2]--
-        }
+        
 
         /* draw red guy */
-        c.fillStyle = "#CC0000"
-        r.forEach(function(g) {
-            g.draw()
-            g.tick()
-        })
-        
+        for(let i = 0; i < reds.pivot; i ++) {
+            let red = reds.pool[i]
+            red.draw()
+            red.tick()
+        }
+        /*
         for(var i = 0; i < BULLET_POOL_SIZE; i++) {
             var bullet = u[i]
             if(bullet) { 
@@ -209,7 +205,7 @@
                 Cell(bullet[0], bullet[1])
             }
             
-        }
+        }*/
         
         /* draw cells */
         for(var cellKey in cells) {
@@ -280,100 +276,8 @@
         }
     }
     
-    
-    function loadEntities() {
-        map.layers[1].objects.forEach(function(entity) {
-            if(entity.name === 'start') {
-                p = [entity.x, entity.y, 0]
-            } else if(entity.name === 'red') {
-                r.push(new Red(entity.x, entity.y, entity.properties.spawnTime))
-            }
-        })
-        
-       for(var i = 0; i < map.width; i ++) {
-            for(var j = 0; j < map.height; j ++) {
-                tile = map.layers[0].data[i+j*100]
-                if(tile === 1) {
-                   collidables.push({x : i*TILE_SIZE, y : j*TILE_SIZE})
-                }
-            }
-        }
-    }
-    
-    function drawMap() {
-        for(var i = 0; i < map.width; i ++) {
-            for(var j = 0; j < map.height; j ++) {
-                tile = map.layers[0].data[i+j*100]
-                if(tile) {
-                    c.fillStyle = tiles[tile]
-                    c.fillRect(i*TILE_SIZE, j*TILE_SIZE, TILE_SIZE, TILE_SIZE)
-                }
-            }
-        }
-    }
-    
-    function Red(x,y, spawnTime) {
-        this.alive = false; 
-        this.isFoyer = true  
-        this.spawnTime = spawnTime
-        this.x = x
-        this.y = y
-        this.cd = 0
-        
-        foyers[x + '_' + y] = {
-            x : this.x,
-            y : this.y,
-            t : SOUND_CD
-        }
-    }
-    
-    Red.prototype.draw = function() {
-        if(this.alive) {
-            c.fillRect(this.x-ENTITY_SIZE/2,this.y-ENTITY_SIZE/2,ENTITY_SIZE,ENTITY_SIZE)
-        }
-    }
-    
-    
-    Red.prototype.tick = function() {
-        if(this.alive) {
-            
-            this.tileX = Math(this.x / TILE_SIZE)
-            this.tileY = Math(this.y / TILE_SIZE)
-            
-            /* move */
-            var aimPlayerVectorStance = stance(p,[this.x, this.y])
-            this.x += (p[0] - this.x) / aimPlayerVectorStance * t * RED_MULTIPLIER
-            this.y += (p[1] - this.y) / aimPlayerVectorStance * t * RED_MULTIPLIER
-            
-            this.newTileX = Math(this.x / TILE_SIZE)
-            this.newTileY = Math(this.y / TILE_SIZE)
-            if(this.tileX != this.newTileX || this.tileY != this.newTileY) {
-                // tile changed
-                soundCells[this.newTileX + '_' + this.newTileY] = {
-                    x : this.newTileX,
-                    y : this.newTileY,
-                    t : SOUND_WAVE_TIME
-                }
-                
-            }
-            
-            /* fire */
-            if(this.cd < 1) {
-                this.cd = PLAYER_PISTOL_CD
-                addBullet([this.x,this.y],p,0)
-            } else {
-                this.cd --
-            }
-        
-        } else if(this.spawnTime < e) {
-            this.alive = true
-        }
-       
-    }
-    
-    function Bullet() {
-        
-    }
+
+
 
     var tmpCellX = 0
     var tmpCellY = 0
