@@ -3,6 +3,7 @@
         margin: 0;padding: 0;font-family: sans-serif;
     }
 </style>
+<img src="assets/1011.png" id="sprite" style="display:none;">
 <div id="info"></div>
 <canvas id="a" style="background:#111517"></canvas>
 <script src="jsToolBox/v2d.js"></script>
@@ -144,39 +145,11 @@
         /* move player */
         
        player.move()
-        /*
-        for(var i = 0; i < collidables.length; i++) {
-            var collidable = collidables[i]
-            
-            
-            
-                
-            
-            if(R) { // ->
-                if(p[0] > collidable.x && p[0] < collidable.x+TILE_SIZE
-                &&
-                p[1] > collidable.y && p[1] < collidable.y+TILE_SIZE) {
-                    p[0] = collidable.x
-                } 
-            } else if(L) { // <-
-                if(p[0] > collidable.x && p[0] < collidable.x+TILE_SIZE
-                &&
-                p[1] > collidable.y && p[1] < collidable.y+TILE_SIZE) {
-                    p[0] = collidable.x + TILE_SIZE
-                } 
-            } 
-            if(U) {
-                 if(p[1] > collidable.x && p[0] < collidable.x+TILE_SIZE
-                &&
-                p[1] > collidable.y && p[1] < collidable.y+TILE_SIZE) {
-                    p[0] = collidable.x + TILE_SIZE
-                } 
-            }
-            
-            //collidable.y 
-        }*/
+       
         
         player.draw()
+        drawUI()
+        
         player.fire()
         
         
@@ -335,5 +308,12 @@
         }
     }
     
+    function drawUI() {
+        c.drawImage(sprite,10,10,150,150)
+    
+    }
+    
     
 </script>
+
+

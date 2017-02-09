@@ -12,6 +12,41 @@ class Player {
         
         this.pos.x = R ? this.pos.x + t : this.pos.x
         this.pos.x = L ? this.pos.x - t : this.pos.x
+        
+        
+        
+         /*
+        for(var i = 0; i < collidables.length; i++) {
+            var collidable = collidables[i]
+            
+            
+            
+                
+            
+            if(R) { // ->
+                if(p[0] > collidable.x && p[0] < collidable.x+TILE_SIZE
+                &&
+                p[1] > collidable.y && p[1] < collidable.y+TILE_SIZE) {
+                    p[0] = collidable.x
+                } 
+            } else if(L) { // <-
+                if(p[0] > collidable.x && p[0] < collidable.x+TILE_SIZE
+                &&
+                p[1] > collidable.y && p[1] < collidable.y+TILE_SIZE) {
+                    p[0] = collidable.x + TILE_SIZE
+                } 
+            } 
+            if(U) {
+                 if(p[1] > collidable.x && p[0] < collidable.x+TILE_SIZE
+                &&
+                p[1] > collidable.y && p[1] < collidable.y+TILE_SIZE) {
+                    p[0] = collidable.x + TILE_SIZE
+                } 
+            }
+            
+            //collidable.y 
+        }*/
+        
     }
     
     draw(){
